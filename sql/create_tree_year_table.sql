@@ -1,5 +1,5 @@
 -- find all tree-years with their treatment codes
-CREATE TABLE tree_year_treatment AS (
+CREATE TABLE tree_year_treatment_of_2x_observed AS (
 	WITH multi_obs_trees AS (
 		SELECT statecd, unitcd, countycd, plot, subp, tree, COUNT(invyr) AS num_obs
 		FROM east_us_tree
@@ -66,8 +66,8 @@ CREATE TABLE tree_year_treatment AS (
 
 
 
-DELETE FROM tree_year_treatment WHERE num_obs IS NULL
+DELETE FROM tree_year_treatment_of_2x_observed WHERE num_obs IS NULL
 
 
-ALTER TABLE tree_year_treatment
+ALTER TABLE tree_year_treatment_of_2x_observed
 DROP COLUMN num_obs

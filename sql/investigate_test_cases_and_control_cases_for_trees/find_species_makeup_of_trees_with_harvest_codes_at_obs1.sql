@@ -10,7 +10,7 @@ WITH obs_1_of_trees AS (
 		subp, 
 		tree, 
 		MIN(invyr) AS invyr
-	FROM tree_year_treatment
+	FROM tree_year_treatment_of_2x_observed
 	GROUP BY 
 		statecd, 
 		unitcd, 
@@ -31,7 +31,7 @@ WITH obs_1_of_trees AS (
 SELECT
 	spcd, 
 	COUNT(spcd) AS trees_with_harvest_codes
-FROM tree_year_treatment tyt
+FROM tree_year_treatment_of_2x_observed tyt
 JOIN east_us_tree eut 
 ON tyt.statecd = eut.statecd 
 	AND tyt.unitcd = eut.unitcd

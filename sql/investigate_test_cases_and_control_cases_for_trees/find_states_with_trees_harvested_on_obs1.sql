@@ -10,7 +10,7 @@ WITH obs_1_of_trees AS (
 		subp, 
 		tree, 
 		MIN(invyr) AS invyr
-	FROM tree_year_treatment
+	FROM tree_year_treatment_of_2x_observed
 	GROUP BY 
 		statecd, 
 		unitcd, 
@@ -31,7 +31,7 @@ WITH obs_1_of_trees AS (
 SELECT
 	statecd,
 	COUNT(statecd)
-FROM tree_year_treatment
+FROM tree_year_treatment_of_2x_observed
 WHERE (statecd, unitcd, countycd, plot, subp, tree, invyr) 
 IN (
 	SELECT * FROM obs_1_of_trees		-- only grab the first observation of each tree

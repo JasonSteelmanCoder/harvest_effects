@@ -10,7 +10,7 @@ WITH obs_1_of_trees AS (
 		subp, 
 		tree, 
 		MIN(invyr) AS invyr
-	FROM tree_year_treatment
+	FROM tree_year_treatment_of_2x_observed
 	GROUP BY 
 		statecd, 
 		unitcd, 
@@ -27,11 +27,11 @@ WITH obs_1_of_trees AS (
 		tree, 
 		invyr
 )
--- Check the treatment codes for the first observation of each tree
+-- Find the number of trees whose plots are harvested at obs1 and the number whose plots are not
 SELECT
 	CASE WHEN (trtcd1 = 10 OR trtcd2 = 10 OR trtcd3 = 10) THEN true ELSE false END AS harvested_on_obs1, 
 	COUNT(CASE WHEN (trtcd1 = 10 OR trtcd2 = 10 OR trtcd3 = 10) THEN true ELSE false END) AS num_trees
-FROM tree_year_treatment
+FROM tree_year_treatment_of_2x_observed
 WHERE (statecd, unitcd, countycd, plot, subp, tree, invyr)
 IN (
 	SELECT * FROM obs_1_of_trees
