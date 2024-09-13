@@ -14,8 +14,7 @@ library(emmeans)
 
 #grab data from csv
 data_path <- Sys.getenv("DATA_PATH")
-print(data_path)
-file_path <- file.path(data_path, "growth_per_year.csv")
+file_path <- file.path(data_path, "growth_per_year_in_em_and_am_trees.csv")
 growth_table <- read.csv(file_path) %>% 
   #add unique_plot column
   mutate(unique_plot = paste(
@@ -27,15 +26,19 @@ growth_table <- read.csv(file_path) %>%
   
 #Reorder harvested_on_obs1 levels and make sure variables are factors
 growth_table$harvested_on_obs1 <- factor(growth_table$harvested_on_obs1, levels = c("false", "true"))
+growth_table$association <- factor(growth_table$association, levels = c("EM", "AM"))
 
 growth_table$unique_plot <- as.factor(growth_table$unique_plot)
 growth_table$unique_subp <- as.factor(growth_table$unique_subp)
 
 
 #growth model
-growth.mod <- lmer(growth_per_year ~ harvested_on_obs1 + association + (1|unique_plot/unique_subp), growth_table)
+growth.mod <- lmer(growth_per_year ~ harvested_on_obs1 * association + (1|unique_plot/unique_subp), growth_table)
 summary(growth.mod)
 Anova(growth.mod) #statistical significance
-growth.em <- emmeans(growth.mod, pairwise~harvested_on_obs1 + association)#contrasts
+growth.em <- emmeans(growth.mod, pairwise~harvested_on_obs1 | association)#contrasts
 growth.em
+
+#plot
+ggplot(growth_table, aes(association, mean(growth_per_year))) + geom_point() + facet_wrap(growth_table$harvested_on_obs1)
 ```
