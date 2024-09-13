@@ -85,3 +85,6 @@ cython_debug/
 
 # Scratch
 scratch.*
+
+# Renviron
+.Renviron
