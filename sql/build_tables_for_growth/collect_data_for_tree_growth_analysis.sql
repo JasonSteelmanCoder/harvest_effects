@@ -82,6 +82,7 @@ WITH tree_dates_and_harvested AS (
 	IN (
 		SELECT * FROM obs_1_of_trees
 	)
+	AND trtcd1 IS NOT NULL AND trtcd2 IS NOT NULL AND trtcd3 IS NOT NULL
 	ORDER BY 
 		tyt.statecd, 
 		tyt.unitcd, 
