@@ -17,14 +17,11 @@ WITH growth_per_year AS (
 	WHERE dia_last_obs IS NOT NULL
 )
 -- Find average yearly growth for different harvesting cases
-SELECT harvested_on_obs1,
+SELECT harvested_on_obs1, 
+	-- association,
 	AVG(growth_per_year) AS avg_growth_per_year
 FROM growth_per_year
-GROUP BY harvested_on_obs1
-
-
-
-
-
-
-
+-- WHERE association = 'AM' or association = 'EM'
+GROUP BY 
+	harvested_on_obs1 
+	-- , association
