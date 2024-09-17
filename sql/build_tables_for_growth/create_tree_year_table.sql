@@ -28,7 +28,7 @@ CREATE TABLE tree_year_treatment_of_2x_observed AS (
 		east_us_tree.statecd = east_us_cond.statecd
 		AND east_us_tree.unitcd = east_us_cond.unitcd
 		AND east_us_tree.countycd = east_us_cond.countycd
-		AND east_us_tree.plot::text = east_us_cond.plot
+		AND east_us_tree.plot = east_us_cond.plot
 		AND east_us_tree.invyr = east_us_cond.invyr
 		AND east_us_tree.condid = east_us_cond.condid
 	LEFT JOIN multi_obs_trees
