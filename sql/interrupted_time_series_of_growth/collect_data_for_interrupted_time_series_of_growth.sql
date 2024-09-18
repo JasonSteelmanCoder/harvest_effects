@@ -10,7 +10,8 @@ WITH tree_years_and_treatments AS (
 		ARRAY_AGG(eut.invyr ORDER BY eut.invyr) AS obs_years,
 		ARRAY_AGG(euc.trtcd1 ORDER BY euc.invyr) AS trtcd1_array,
 		ARRAY_AGG(euc.trtcd2 ORDER BY euc.invyr) AS trtcd2_array,
-		ARRAY_AGG(euc.trtcd3 ORDER BY euc.invyr) AS trtcd3_array
+		ARRAY_AGG(euc.trtcd3 ORDER BY euc.invyr) AS trtcd3_array,
+		ARRAY_AGG(eut.dia ORDER BY eut.invyr) AS diameters
 	FROM east_us_tree eut
 	JOIN east_us_cond euc
 	ON 
@@ -50,7 +51,8 @@ SELECT
 			ELSE 0
 		END
 		FROM GENERATE_SUBSCRIPTS(trtcd1_array, 1) AS i
-	) AS combined_trtcds
+	) AS combined_trtcds,
+	diameters
 FROM tree_years_and_treatments tyat
 WHERE 
 	tyat.trtcd1_array[1] != 10				-- the plot was *not* harvested at obs1
