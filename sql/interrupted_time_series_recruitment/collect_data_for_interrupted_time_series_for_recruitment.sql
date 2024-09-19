@@ -40,7 +40,7 @@ WITH row_per_tree_associated AS (
 				euc.plot,
 				euc.invyr
 		)
-		-- make a row for each tree (include spcd and statuscd)
+		-- make a row for each tree (include association)
 		SELECT 
 			py.statecd,
 			py.unitcd,
@@ -76,7 +76,7 @@ WITH row_per_tree_associated AS (
 	LEFT JOIN ref_species rs 
 	ON rs.spcd = rpt.spcd
 )
--- group by plot-year while counting AM and EM trees (exclude dead trees from counts)
+-- group by plot-year while counting AM and EM trees
 SELECT
 	statecd, 
 	unitcd,
@@ -84,9 +84,9 @@ SELECT
 	plot, 
 	invyr,
 	MAX(yearly_trtcd) AS yearly_trtcd,			-- there is only one yearly_trtcd per plot-year, so keep it the same.
-	COUNT(CASE WHEN association = 'AM' AND statuscd = 1 THEN 1 ELSE 0 END) AS am_trees,
-	COUNT(CASE WHEN association = 'EM' AND statuscd = 1 THEN 1 ELSE 0 END) AS em_trees,
-	COUNT(CASE WHEN (association != 'AM' AND association != 'EM' AND statuscd = 1) THEN 1 ELSE 0 END) AS other_trees
+	SUM(CASE WHEN (association = 'AM' AND statuscd = 1) THEN 1 ELSE 0 END) AS am_trees,
+	SUM(CASE WHEN (association = 'EM' AND statuscd = 1) THEN 1 ELSE 0 END) AS em_trees,
+	SUM(CASE WHEN (association != 'AM' AND association != 'EM' AND statuscd = 1) THEN 1 ELSE 0 END) AS other_trees
 FROM row_per_tree_associated rpta
 GROUP BY 
 	statecd, 
