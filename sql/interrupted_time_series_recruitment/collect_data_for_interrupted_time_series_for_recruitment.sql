@@ -40,7 +40,7 @@ WITH row_per_tree_associated AS (
 				euc.plot,
 				euc.invyr
 		)
-		-- make a row for each tree (include association)
+		-- make a row for each tree (include spcd and statuscd)
 		SELECT 
 			py.statecd,
 			py.unitcd,
@@ -76,7 +76,7 @@ WITH row_per_tree_associated AS (
 	LEFT JOIN ref_species rs 
 	ON rs.spcd = rpt.spcd
 )
--- group by plot-year while counting AM and EM trees
+-- group by plot-year while counting AM and EM trees (exclude dead trees from counts)
 SELECT
 	statecd, 
 	unitcd,
@@ -95,4 +95,4 @@ GROUP BY
 	plot, 
 	invyr
 
--- still to account for: test counts on individual plots
+-- still to account for: test counts on individual plots, ARRAY_AGG years, trtcds, and tree counts, filter for plots with no harvesting on obs1, filter for plots with harvesting on a middle obs
