@@ -117,7 +117,7 @@ WITH multi_obs_plots AS (
 	HAVING 
 		ARRAY_LENGTH(ARRAY_AGG(invyr ORDER BY invyr), 1) > 2		-- only accept plots with at least three observations
 )
--- 
+-- limit the output to plots that are valid for interrupted time series analysis: they can't be harvested on the first observation, but must be observed on a middle observation (not first or last obs)
 SELECT 
 	*
 FROM multi_obs_plots mop
