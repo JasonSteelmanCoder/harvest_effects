@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 import csv
 from statistics import mean
+from scipy import stats
 
 load_dotenv()
 
@@ -39,6 +40,7 @@ with open(f"C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/harvest_data/recruitmen
         new_reader.append(new_row)
 
 changes_in_am_slope = []
+changes_in_em_slope = []
 
 for row in new_reader:
     # print(row)
@@ -81,11 +83,8 @@ for row in new_reader:
 
     changes_in_am_slope.append(change_in_am_slope)
 
+    # REPEAT FOR EM TREES
 
-
-changes_in_em_slope = []
-
-for row in new_reader:
     # print(row)
 
     starting_em_trees = row[em_trees_col][0]
@@ -119,12 +118,16 @@ for row in new_reader:
 
     change_in_em_slope = delta_em_per_year_after - delta_em_per_year_before
 
-    print("\n")
     print(f"delta EM per year before harvesting: {delta_em_per_year_before}")
     print(f"delta EM per year after harvesting: {delta_em_per_year_after}")
     print(f"change in EM slope: {change_in_em_slope}")
 
     changes_in_em_slope.append(change_in_em_slope)
 
+t_statistic, p_value = stats.ttest_ind(changes_in_am_slope, changes_in_em_slope)
+
 print(f"\naverage change in slope for AM trees: {mean(changes_in_am_slope)}")
 print(f"average change in slope for EM trees: {mean(changes_in_em_slope)}\n")
+
+print(f"t-statistic: {t_statistic}")
+print(f"p-value: {p_value}")
