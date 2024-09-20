@@ -115,15 +115,18 @@ WITH multi_obs_plots AS (
 		countycd,
 		plot
 	HAVING 
-		ARRAY_LENGTH(ARRAY_AGG(invyr ORDER BY invyr), 1) > 2		-- only accept plots with at least three observations
+		ARRAY_LENGTH(ARRAY_AGG(invyr ORDER BY invyr), 1) > 3		-- only accept plots with at least four observations
 )
--- limit the output to plots that are valid for interrupted time series analysis: they can't be harvested on the first observation, but must be observed on a middle observation (not first or last obs)
+-- limit the output to plots that are valid for interrupted time series analysis: they can't be harvested on the first or second, but must be observed on a middle observation (not first, second, or last obs)
 SELECT 
 	*
 FROM multi_obs_plots mop
 WHERE 
 	yearly_trtcd[1] = 0													-- plot must not be harvested on the first observation
-	AND 10 = ANY(yearly_trtcd[2:ARRAY_LENGTH(yearly_trtcd, 1) - 1])		-- plot must be harvested between the first and last observations
+	AND yearly_trtcd[2] = 0												-- plot must not be harvested on second observation
+	AND 10 = ANY(yearly_trtcd[2:ARRAY_LENGTH(yearly_trtcd, 1) - 1])		-- plot must be harvested between the second and last observations
+
+
 
 
 
