@@ -123,7 +123,7 @@ SELECT
 FROM multi_obs_plots mop
 WHERE 
 	yearly_trtcd[1] = 0													-- plot must not be harvested on the first observation
-	AND ANY(yearly_trtcd[2:ARRAY_LENGTH(yearly_trtcd, 1) - 1]) = 10		-- plot must be harvested between the first and last observations
+	AND 10 = ANY(yearly_trtcd[2:ARRAY_LENGTH(yearly_trtcd, 1) - 1])		-- plot must be harvested between the first and last observations
 
 
 
