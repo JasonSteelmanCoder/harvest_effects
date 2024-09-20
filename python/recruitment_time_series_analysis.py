@@ -52,19 +52,22 @@ for row in new_reader:
             break
         else: 
             i += 1
-    am_trees_at_harvest = row[am_trees_col][i]
-    harvest_year = row[years_col][i]
+    am_trees_before_harvest = row[am_trees_col][i - 1]
+    pre_harvest_year = row[years_col][i - 1]
+
+    am_trees_after_harvest = row[am_trees_col][i]
+    post_harvest_year = row[years_col][i]
 
     final_am_trees = row[am_trees_col][-1]
     final_year = row[years_col][-1]
 
 
     # calculate change in slope
-    delta_am_before_harvest = am_trees_at_harvest - starting_am_trees
-    years_before_harvest = harvest_year - starting_year
+    delta_am_before_harvest = am_trees_before_harvest - starting_am_trees
+    years_before_harvest = pre_harvest_year - starting_year
 
-    delta_am_after_harvest = final_am_trees - am_trees_at_harvest
-    years_after_harvest = final_year - harvest_year
+    delta_am_after_harvest = final_am_trees - am_trees_after_harvest
+    years_after_harvest = final_year - post_harvest_year
 
     delta_am_per_year_before = delta_am_before_harvest / years_before_harvest
     delta_am_per_year_after = delta_am_after_harvest / years_after_harvest
@@ -78,4 +81,50 @@ for row in new_reader:
 
     changes_in_am_slope.append(change_in_am_slope)
 
-print(f"\naverage change in delta AM trees per year: {mean(changes_in_am_slope)}")
+
+
+changes_in_em_slope = []
+
+for row in new_reader:
+    # print(row)
+
+    starting_em_trees = row[em_trees_col][0]
+    starting_year = row[years_col][0]
+
+    i = 0
+    for observation in row[harvested_col]:
+        if observation == 10:
+            break
+        else: 
+            i += 1
+    em_trees_before_harvest = row[em_trees_col][i - 1]
+    pre_harvest_year = row[years_col][i - 1]
+
+    em_trees_after_harvest = row[em_trees_col][i]
+    post_harvest_year = row[years_col][i]
+
+    final_em_trees = row[em_trees_col][-1]
+    final_year = row[years_col][-1]
+
+
+    # calculate change in slope
+    delta_em_before_harvest = em_trees_before_harvest - starting_em_trees
+    years_before_harvest = pre_harvest_year - starting_year
+
+    delta_em_after_harvest = final_em_trees - em_trees_after_harvest
+    years_after_harvest = final_year - post_harvest_year
+
+    delta_em_per_year_before = delta_em_before_harvest / years_before_harvest
+    delta_em_per_year_after = delta_em_after_harvest / years_after_harvest
+
+    change_in_em_slope = delta_em_per_year_after - delta_em_per_year_before
+
+    print("\n")
+    print(f"delta EM per year before harvesting: {delta_em_per_year_before}")
+    print(f"delta EM per year after harvesting: {delta_em_per_year_after}")
+    print(f"change in EM slope: {change_in_em_slope}")
+
+    changes_in_em_slope.append(change_in_em_slope)
+
+print(f"\naverage change in slope for AM trees: {mean(changes_in_am_slope)}")
+print(f"average change in slope for EM trees: {mean(changes_in_em_slope)}\n")
