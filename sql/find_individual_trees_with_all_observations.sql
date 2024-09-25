@@ -34,5 +34,3 @@ ON
 ORDER BY num DESC
 
 
-
-
