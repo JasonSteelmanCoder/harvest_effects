@@ -88,11 +88,16 @@ WITH filtered_plot_observations AS (
 -- find the tree counts for each relevant plot observation
 SELECT 
 	fpo.*,
-	count(eut.tree)
+	SUM(CASE WHEN rs.association = 'AM' THEN 1 ELSE 0 END) AS am_trees,
+	SUM(CASE WHEN rs.association = 'EM' THEN 1 ELSE 0 END) AS em_trees,
+	SUM(CASE WHEN rs.association != 'AM' AND rs.association != 'EM' THEN 1 ELSE 0 END) AS other_trees
 FROM filtered_plot_observations fpo
 LEFT JOIN east_us_tree eut
 ON eut.plt_cn = fpo.cn
+LEFT JOIN ref_species rs
+ON rs.spcd = eut.spcd
 GROUP BY fpo.original_cn, fpo.cn, fpo.yr, fpo.harvested
+
 
 
 
