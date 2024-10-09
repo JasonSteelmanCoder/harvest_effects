@@ -3,19 +3,18 @@ from dotenv import load_dotenv
 import csv
 from statistics import mean
 from scipy import stats
+import sys
 
 load_dotenv()
 
 # name the indexes of different columns
-statecd_col = 0
-unitcd_col = 1
-countycd_col = 2
-plot_col = 3
-years_col = 4
-harvested_col = 5
-am_trees_col = 6
-em_trees_col = 7
-other_trees_col = 8
+original_cn_col = 0
+cn_sequence_col = 1
+years_col = 2
+harvested_col = 3
+am_trees_col = 4
+em_trees_col = 5
+other_trees_col = 6
 
 new_reader = []
 
@@ -27,17 +26,22 @@ with open(f"C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/harvest_data/recruitmen
     for row in reader:
         new_row = []
 
-        new_row.append(int(row[statecd_col]))
-        new_row.append(int(row[unitcd_col]))
-        new_row.append(int(row[countycd_col]))
-        new_row.append(int(row[plot_col]))
-        new_row.append([int(val) for val in row[years_col].strip("[]").split(",")])
-        new_row.append([int(val.strip("\"")) for val in row[harvested_col].strip("[]").split(",")])
-        new_row.append([int(val.strip("\"")) for val in row[am_trees_col].strip("[]").split(",")])
-        new_row.append([int(val.strip("\"")) for val in row[em_trees_col].strip("[]").split(",")])
-        new_row.append([int(val.strip("\"")) for val in row[other_trees_col].strip("[]").split(",")])
+        new_row.append(int(row[original_cn_col]))
+        new_row.append([int(val.strip("\'\"")) for val in row[cn_sequence_col].strip("[]").split(",")])
+        new_row.append([int(val.strip("\'\"")) for val in row[years_col].strip("[]").split(",")])
+        harvest_list = []
+        for val in row[harvested_col].strip("[]").split(","):
+            if val == 'null':
+                harvest_list.append(None)
+            else:
+                harvest_list.append(int(val.strip("\'\"")))
+        new_row.append(harvest_list)
+        new_row.append([int(val.strip("\'\"")) for val in row[am_trees_col].strip("[]").split(",")])
+        new_row.append([int(val.strip("\'\"")) for val in row[em_trees_col].strip("[]").split(",")])
+        new_row.append([int(val.strip("\'\"")) for val in row[other_trees_col].strip("[]").split(",")])
 
         new_reader.append(new_row)
+        
 
 changes_in_am_slope = []
 changes_in_em_slope = []
