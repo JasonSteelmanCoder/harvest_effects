@@ -53,20 +53,22 @@ for row in new_reader:
     starting_year = row[years_col][0]
 
     i = 0
+    harvested_indices = []
     for observation in row[harvested_col]:
         if observation == 10:
-            break
-        else: 
-            i += 1
-    am_trees_before_harvest = row[am_trees_col][i - 1]
-    pre_harvest_year = row[years_col][i - 1]
+            harvested_indices.append(i)
+        i += 1
+    first_harvest_i = harvested_indices[0]
+    last_harvest_i = harvested_indices[-1]
 
-    am_trees_after_harvest = row[am_trees_col][i]
-    post_harvest_year = row[years_col][i]
+    am_trees_before_harvest = row[am_trees_col][first_harvest_i - 1]
+    pre_harvest_year = row[years_col][first_harvest_i - 1]
+
+    am_trees_after_harvest = row[am_trees_col][last_harvest_i]
+    post_harvest_year = row[years_col][last_harvest_i]
 
     final_am_trees = row[am_trees_col][-1]
     final_year = row[years_col][-1]
-
 
     # calculate change in slope
     delta_am_before_harvest = am_trees_before_harvest - starting_am_trees
@@ -94,21 +96,14 @@ for row in new_reader:
     starting_em_trees = row[em_trees_col][0]
     starting_year = row[years_col][0]
 
-    i = 0
-    for observation in row[harvested_col]:
-        if observation == 10:
-            break
-        else: 
-            i += 1
-    em_trees_before_harvest = row[em_trees_col][i - 1]
-    pre_harvest_year = row[years_col][i - 1]
+    em_trees_before_harvest = row[em_trees_col][first_harvest_i - 1]
+    pre_harvest_year = row[years_col][first_harvest_i - 1]
 
-    em_trees_after_harvest = row[em_trees_col][i]
-    post_harvest_year = row[years_col][i]
+    em_trees_after_harvest = row[em_trees_col][last_harvest_i]
+    post_harvest_year = row[years_col][last_harvest_i]
 
     final_em_trees = row[em_trees_col][-1]
     final_year = row[years_col][-1]
-
 
     # calculate change in slope
     delta_em_before_harvest = em_trees_before_harvest - starting_em_trees
