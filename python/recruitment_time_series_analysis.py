@@ -123,7 +123,7 @@ for row in new_reader:
 
     changes_in_em_slope.append(change_in_em_slope)
 
-t_statistic, p_value = stats.ttest_ind(changes_in_am_slope, changes_in_em_slope)
+t_statistic, p_value = stats.ttest_rel(changes_in_am_slope, changes_in_em_slope)
 
 print(f"\naverage change in slope for AM trees: {mean(changes_in_am_slope)}")
 print(f"average change in slope for EM trees: {mean(changes_in_em_slope)}\n")
