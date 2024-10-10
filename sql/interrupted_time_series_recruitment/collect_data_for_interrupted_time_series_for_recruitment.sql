@@ -75,6 +75,7 @@ WITH plot_observation_associations AS (
 			FROM harvested_plots
 			WHERE harvested_sequence[1] = 0					-- the plot must not be harvested on the first observation
 				AND harvested_sequence[2] = 0					-- the plot must not be harvested on the second observation
+				AND harvested_sequence[ARRAY_LENGTH(harvested_sequence, 1)] = 0 			-- the final observation must not be harvested or null
 				AND 10 = ANY(harvested_sequence[3:ARRAY_LENGTH(harvested_sequence, 1) - 1])		-- the plot must be harvested between the second and last observations
 			ORDER BY ARRAY_LENGTH(cn_sequence, 1) DESC
 		)
@@ -110,6 +111,9 @@ SELECT
 	ARRAY_AGG(other_trees ORDER BY yr) AS other_trees_sequence
 FROM plot_observation_associations poa
 GROUP BY original_cn
+
+
+
 
 
 
