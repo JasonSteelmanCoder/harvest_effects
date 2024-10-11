@@ -10,7 +10,7 @@ WITH individual_trees_with_spcd AS (
 								eumot.original_cn,
 								UNNEST(eumot.cn_sequence) AS current_cn
 							FROM east_us_multi_observed_trees eumot
-							WHERE ARRAY_LENGTH(eumot.cn_sequence, 1) > 2		-- accept only plots that were observed at least 3x
+							WHERE ARRAY_LENGTH(eumot.cn_sequence, 1) > 2		-- accept only trees that were observed at least 3x
 						)
 						-- add diameter, year, and plot from the tree table
 						-- only keep live trees, with valid diameters
@@ -23,8 +23,8 @@ WITH individual_trees_with_spcd AS (
 						FROM multi_obs_trees mot
 						JOIN east_us_tree eut
 						ON eut.cn = mot.current_cn
-						WHERE eut.dia IS NOT NULL
-							AND eut.statuscd = 1
+						WHERE eut.dia IS NOT NULL		-- tree must have a valid diameter
+							AND eut.statuscd = 1		-- tree must be alive
 					)
 					-- add harvest codes from the cond table
 					-- REMEMBER: one plot can have more than one condition! Each row in this table is a *condition* on the plot where the tree is.
@@ -76,8 +76,7 @@ WITH individual_trees_with_spcd AS (
 	SELECT 
 		it.*
 	FROM individual_trees it
-	WHERE it.harvested[1] = 0
-		AND 10 = ANY(it.harvested[2:ARRAY_LENGTH(harvested, 1) - 1])
+	WHERE ARRAY_TO_STRING(it.harvested, ',', 'null') ~ '^(0,)+10(\S)+$'	-- the harvest sequence has any number of zeros, followed by a ten, then other values. In other words, it's not harvested in the first observation (or the first few), but it's harvested before the last observation.
 	ORDER BY ARRAY_LENGTH(cn_sequence, 1) DESC
 )
 -- convert spcd to association
@@ -92,6 +91,7 @@ SELECT
 FROM individual_trees_with_spcd itws
 JOIN ref_species rs
 ON rs.spcd = itws.spcd
+ORDER BY ARRAY_LENGTH(cn_sequence, 1)
 
 
 
