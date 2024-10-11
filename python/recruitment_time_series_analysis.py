@@ -77,6 +77,9 @@ for row in new_reader:
     delta_am_after_harvest = final_am_trees - am_trees_after_harvest
     years_after_harvest = final_year - post_harvest_year
 
+    if years_before_harvest == 0 or years_after_harvest == 0:
+        continue                                                # skip rows that have zero years between relevant observations
+
     delta_am_per_year_before = delta_am_before_harvest / years_before_harvest
     delta_am_per_year_after = delta_am_after_harvest / years_after_harvest
 
