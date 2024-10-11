@@ -6,7 +6,7 @@ from scipy import stats
 
 # get the data from a json file
 load_dotenv()
-input_file = f"C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/harvest_data/growth/growth_itsa_data_first_draft.json"
+input_file = f"C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/harvest_data/growth/growth_itsa_data.json"
 with open(input_file, "r") as file:
     myjson = json.load(file)
 
@@ -25,9 +25,9 @@ for row in myjson:
             i += 1
 
     # name variables
-    first_year = row["invyr"][0]
-    harvest_year = row["invyr"][i]
-    last_year = row["invyr"][-1]
+    first_year = row["measyear"][0]
+    harvest_year = row["measyear"][i]
+    last_year = row["measyear"][-1]
 
     starting_dia = row["dia"][0]
     harvest_dia = row["dia"][i]
