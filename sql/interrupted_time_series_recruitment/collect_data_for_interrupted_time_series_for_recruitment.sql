@@ -10,7 +10,7 @@ WITH plot_observation_associations AS (
 							SELECT 
 								cn AS original_cn,
 								array[cn]::bigint[] AS cn_sequence,
-								array[invyr]::bigint[] AS year_sequence
+								array[measyear]::bigint[] AS year_sequence
 							FROM east_us_plot
 							WHERE prev_plt_cn IS NULL
 							
@@ -19,7 +19,7 @@ WITH plot_observation_associations AS (
 							SELECT 
 								plot_cte.original_cn,
 								plot_cte.cn_sequence || east_us_plot.cn,
-								plot_cte.year_sequence || east_us_plot.invyr
+								plot_cte.year_sequence || east_us_plot.measyear
 							FROM plot_cte
 							JOIN east_us_plot
 							ON east_us_plot.prev_plt_cn = plot_cte.cn_sequence[ARRAY_LENGTH(plot_cte.cn_sequence, 1)]
