@@ -13,7 +13,7 @@ WITH individual_trees_with_spcd AS (
 							WHERE ARRAY_LENGTH(eumot.cn_sequence, 1) > 2		-- accept only plots that were observed at least 3x
 						)
 						-- add diameter, year, and plot from the tree table
-						-- only keep trees with valid diameters
+						-- only keep live trees, with valid diameters
 						SELECT 
 							mot.*,
 							eut.dia,
@@ -24,6 +24,7 @@ WITH individual_trees_with_spcd AS (
 						JOIN east_us_tree eut
 						ON eut.cn = mot.current_cn
 						WHERE eut.dia IS NOT NULL
+							AND eut.statuscd = 1
 					)
 					-- add harvest codes from the cond table
 					-- REMEMBER: one plot can have more than one condition! Each row in this table is a *condition* on the plot where the tree is.
@@ -91,3 +92,7 @@ SELECT
 FROM individual_trees_with_spcd itws
 JOIN ref_species rs
 ON rs.spcd = itws.spcd
+
+
+
+
