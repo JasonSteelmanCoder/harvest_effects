@@ -32,3 +32,4 @@ ON
 	AND ARRAY_LENGTH(tree_cte.cn_sequence, 1) = obs_nums.num
 	WHERE num > 1
 ORDER BY num DESC
+

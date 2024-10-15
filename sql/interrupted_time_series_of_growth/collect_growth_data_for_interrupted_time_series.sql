@@ -35,7 +35,7 @@ WITH individual_trees_with_spcd AS (
 						ON eup.cn = mt.plt_cn
 					)
 					-- add harvest codes from the cond table
-					-- REMEMBER: one plot can have more than one condition! Each row in this table is a *condition* on the plot where the tree is.
+					-- REMEMBER: one plot can have more than one condition! Each row in this cte is a *condition* on the plot where the tree is.
 					SELECT
 						dt.*,
 						CASE WHEN trtcd1 IS NULL THEN NULL WHEN (trtcd1 = 10 OR trtcd2 = 10 OR trtcd3 = 10) THEN 10 ELSE 0 END AS harvested

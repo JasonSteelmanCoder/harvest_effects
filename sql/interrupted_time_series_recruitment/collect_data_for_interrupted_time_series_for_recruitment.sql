@@ -32,7 +32,7 @@ WITH plot_observation_associations AS (
 							FROM plot_cte
 							GROUP BY original_cn
 						)
-						-- unnest the lists into plot-years (also, drop plots that were only observed once)
+						-- unnest the lists into plot-years (also, filter out plots that were not observed enough times)
 						SELECT 
 							plot_cte.original_cn, 
 							UNNEST(plot_cte.cn_sequence) AS cn,
