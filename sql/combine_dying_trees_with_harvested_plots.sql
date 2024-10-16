@@ -168,7 +168,6 @@ SELECT
 	hmop.year_sequence AS plot_year_sequence,
 	hmop.harvested_sequence AS plot_harvested_sequence,
 	pt.original_tree_cn,
-	pt.spcd,
 	pt.tree_cn_sequence,
 	pt.tree_year_sequence,
 	pt.tree_status_sequence,
