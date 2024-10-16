@@ -92,6 +92,7 @@ individual_trees AS (
 			-- grab each individual tree with all of its aliases
 			SELECT 
 				cn AS original_cn,
+                spcd,
 				array[cn]::bigint[] AS cn_sequence,
 				array[invyr]::smallint[] AS year_sequence,
 				array[statuscd]::smallint[] AS status_sequence,
@@ -103,6 +104,7 @@ individual_trees AS (
 		
 			SELECT 
 				tree_cte.original_cn,
+                tree_cte.spcd,
 				tree_cte.cn_sequence || east_us_tree.cn,
 				tree_cte.year_sequence || east_us_tree.invyr,
 				tree_cte.status_sequence || east_us_tree.statuscd,
@@ -122,6 +124,7 @@ individual_trees AS (
 		-- filter out the incomplete arrays of observations
 		SELECT 
 			tree_cte.original_cn AS original_tree_cn, 
+            tree_cte.spcd,
 			tree_cte.cn_sequence AS tree_cn_sequence,
 			tree_cte.year_sequence AS tree_year_sequence,
 			tree_cte.status_sequence AS tree_status_sequence,
@@ -137,6 +140,7 @@ individual_trees AS (
 	-- grab only trees that start out alive and end up dead (if they're cut down, it doesn't count.)
 	SELECT 
 		original_tree_cn,
+		spcd,
 		tree_cn_sequence,
 		tree_year_sequence,
 		tree_status_sequence,
@@ -159,10 +163,22 @@ prepared_trees AS (
 )
 -- grab each relevant plot with its relevant trees (there will be multiple rows for each plot, and one row for each tree.)
 SELECT
-	*		
+	hmop.original_cn AS plot_original_cn,
+	hmop.cn_sequence AS plot_cn_sequence,
+	hmop.year_sequence AS plot_year_sequence,
+	hmop.harvested_sequence AS plot_harvested_sequence,
+	pt.original_tree_cn,
+	pt.spcd,
+	pt.tree_cn_sequence,
+	pt.tree_year_sequence,
+	pt.tree_status_sequence,
+	pt.tree_plt_cn_sequence,
+	rs.association
 FROM harvested_multi_obs_plots hmop
 JOIN prepared_trees pt
 ON hmop.original_cn = pt.original_plot_cn
+JOIN ref_species rs 
+ON rs.spcd = pt.spcd
 
 
 
