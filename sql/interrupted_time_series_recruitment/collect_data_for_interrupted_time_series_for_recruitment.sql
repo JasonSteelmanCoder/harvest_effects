@@ -41,7 +41,7 @@ WITH plot_observation_associations AS (
 						JOIN obs_nums
 						ON 
 							plot_cte.original_cn = obs_nums.original_cn
-							AND ARRAY_LENGTH(plot_cte.cn_sequence, 1) = obs_nums.num
+							AND ARRAY_LENGTH(plot_cte.cn_sequence, 1) = obs_nums.num		-- filter out incomplete arrays left over from construction
 						WHERE num > 3			-- only accept plots that were observed at least four times
 						ORDER BY num DESC
 					)
