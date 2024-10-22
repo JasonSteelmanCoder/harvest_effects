@@ -163,7 +163,7 @@ trees AS (
 		FROM tree_cte
 		GROUP BY original_cn
 	)
-	-- grab each tree observation with its sequence of aliases
+	-- grab each tree observation 
 	SELECT 
 		tree_cte.original_cn AS original_tree_cn, 
 		UNNEST(tree_cte.cn_sequence) AS current_tree_cn,
@@ -176,9 +176,7 @@ trees AS (
 	ON 
 		tree_cte.original_cn = obs_nums.original_cn
 		AND ARRAY_LENGTH(tree_cte.cn_sequence, 1) = obs_nums.num
-		WHERE num > 1			-- the tree must be observed more than once
-			AND tree_cte.status_sequence[1] = 1 		-- the tree must be alive at first
-			AND tree_cte.status_sequence[ARRAY_LENGTH(tree_cte.status_sequence, 1)] = 2 -- the tree must die naturally
+		WHERE tree_cte.status_sequence[1] = 1 		-- the tree must be alive at first
 	ORDER BY original_tree_cn, tree_yr
 )
 -- add a column for death year
