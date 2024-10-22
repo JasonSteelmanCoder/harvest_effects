@@ -40,7 +40,7 @@ WITH filtered_plot_observations AS (
 				ON 
 					plot_cte.original_cn = obs_nums.original_cn
 					AND ARRAY_LENGTH(plot_cte.cn_sequence, 1) = obs_nums.num		-- filter out incomplete arrays left over from construction
-				WHERE num > 1		-- the plot needs to have been observed at least twice
+				WHERE num > 2		-- the plot needs to have been observed at least three times
 				ORDER BY num DESC
 			)
 			-- check for harvesting each plot year
@@ -215,9 +215,25 @@ prepared_trees AS (
 	ON rs.spcd = trees.spcd
 	
 )
--- 
-SELECT * 
-FROM prepared_trees
+-- grab every relevant tree with its matching plot observation
+-- there will one row for each tree
+-- there will be multiple rows for each plot observation
+SELECT 
+	obs_number,
+	original_plot_cn,
+	current_cn AS current_plot_cn,
+	yr,
+	-- harvested,
+	-- previously_harvested,
+	first_harvest_year,
+	original_tree_cn,
+	statuscd,
+	death_year,
+	association
+FROM filtered_plot_observations fpo
+JOIN prepared_trees pt
+ON pt.original_plot_cn = fpo.original_cn
+	AND pt.tree_yr = fpo.yr
 
 
 
