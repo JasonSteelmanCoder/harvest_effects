@@ -1,3 +1,122 @@
+WITH unfiltered_observations AS (
+	WITH harvested_observations AS (
+		WITH plot_observations AS (
+			WITH RECURSIVE plot_cte AS (
+				-- grab each individual plot with all of its aliases and years
+				SELECT 
+					cn AS original_cn,
+					array[cn]::bigint[] AS cn_sequence,
+					array[invyr]::bigint[] AS year_sequence
+				FROM east_us_plot
+				WHERE prev_plt_cn IS NULL
+				
+				UNION ALL
+			
+				SELECT 
+					plot_cte.original_cn,
+					plot_cte.cn_sequence || east_us_plot.cn,
+					plot_cte.year_sequence || east_us_plot.invyr
+				FROM plot_cte
+				JOIN east_us_plot
+				ON east_us_plot.prev_plt_cn = plot_cte.cn_sequence[ARRAY_LENGTH(plot_cte.cn_sequence, 1)]
+					
+			), obs_nums AS (
+				-- count the number of observations for each plot
+				SELECT 
+					original_cn, 
+					MAX(ARRAY_LENGTH(cn_sequence, 1))  AS num
+				FROM plot_cte
+				GROUP BY original_cn
+			)
+			-- unnest the cn and year sequences to get individual observations
+			-- also, filter out unnecessary rows
+			SELECT 
+				plot_cte.original_cn, 
+				UNNEST(plot_cte.cn_sequence) AS current_cn,
+				UNNEST(plot_cte.year_sequence) AS yr
+			FROM plot_cte
+			JOIN obs_nums
+			ON 
+				plot_cte.original_cn = obs_nums.original_cn
+				AND ARRAY_LENGTH(plot_cte.cn_sequence, 1) = obs_nums.num		-- filter out incomplete arrays left over from construction
+			WHERE num > 1		-- the plot needs to have been observed at least twice
+			ORDER BY num DESC
+		)
+		-- check for harvesting each plot year
+		SELECT 
+			ROW_NUMBER() OVER (
+				PARTITION BY original_cn
+				ORDER BY yr
+			) AS obs_number,
+			pobs.*,
+			MAX(CASE 
+				WHEN euc.trtcd1 = 10 OR euc.trtcd2 = 10 OR euc.trtcd3 = 10
+				THEN 10
+				WHEN euc.trtcd1 IS NULL AND euc.trtcd2 IS NULL AND euc.trtcd3 IS NULL
+				THEN NULL
+				ELSE 0
+			END) AS harvested,
+			(MAX(MAX(CASE 
+				WHEN euc.trtcd1 = 10 OR euc.trtcd2 = 10 OR euc.trtcd3 = 10
+				THEN 10
+				WHEN euc.trtcd1 IS NULL AND euc.trtcd2 IS NULL AND euc.trtcd3 IS NULL
+				THEN NULL
+				ELSE 0
+			END)) OVER (
+				PARTITION BY original_cn
+				ORDER BY yr
+			)::DECIMAL / 10)::SMALLINT AS previously_harvested   -- retuns 1 for "has been harvested and zero for never harvested"	
+		FROM plot_observations pobs
+		JOIN east_us_cond euc 		-- check on loss of ~100 rows here (probably some plots don't have any conditions?)
+		ON euc.plt_cn = pobs.current_cn
+		GROUP BY pobs.original_cn, pobs.current_cn, pobs.yr	
+		ORDER BY original_cn DESC, yr
+	)
+	-- add columns indicating whether a plot was harvested on first observation and whether its harvest was before the last observation
+	SELECT
+		obs_number,
+		original_cn,
+		current_cn,
+		yr,
+		harvested,
+		previously_harvested,
+		SUM(previously_harvested) FILTER (WHERE previously_harvested IS NOT NULL) OVER (
+			PARTITION BY original_cn
+		) AS num_post_harvest_obs, 		-- puts the total number of post-harvest observations for the plot in every row
+		FIRST_VALUE(previously_harvested) OVER (
+			PARTITION BY original_cn
+			ORDER BY yr
+		) AS first_observation_harvested
+	FROM harvested_observations hobs
+	ORDER BY 
+		original_cn DESC, 
+		obs_number
+)
+-- only keep observations for plots that are unharvested on their first observation
+-- and have at least one additional observation after their first harvest
+SELECT 
+	obs_number,
+	original_cn,
+	current_cn,
+	yr,
+	harvested,
+	previously_harvested
+FROM unfiltered_observations unfobs
+WHERE 
+	first_observation_harvested = 0 	-- the plot must be unharvested at the first observation
+	AND num_post_harvest_obs > 1		-- the plot must have at least one additional observation after the first harvest
+ORDER BY 
+	original_cn DESC, 
+	obs_number
+
+
+
+
+
+
+--
+-- DEPRECATED
+--
 WITH harvested_multi_obs_plots AS (
 	WITH unfiltered_harvested_plots AS (
 		WITH harvested_plot_observations AS (
@@ -70,7 +189,8 @@ WITH harvested_multi_obs_plots AS (
 	-- only select plots that have harvesting before their last observation
 	SELECT *
 	FROM unfiltered_harvested_plots uhp
-	WHERE 10 = ANY(uhp.harvested_sequence[1:uhp.harvested_sequence[ARRAY_LENGTH(uhp.harvested_sequence, 1) - 1]]) -- an observation before the last one shows harvesting
+	WHERE uhp.harvested_sequence[1] = 0                                                 -- the first observation needs to be unharvested
+        AND 10 = ANY(uhp.harvested_sequence[1:uhp.harvested_sequence[ARRAY_LENGTH(uhp.harvested_sequence, 1) - 1]]) -- an observation before the last one shows harvesting
 
 	
 ),
