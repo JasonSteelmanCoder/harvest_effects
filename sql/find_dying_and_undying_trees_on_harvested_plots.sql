@@ -217,19 +217,19 @@ prepared_trees AS (
 -- there will one row for each tree
 -- there will be multiple rows for each plot observation
 SELECT 
-	obs_number,
-	original_plot_cn,
-	current_cn AS current_plot_cn,
-	yr,
-	-- harvested,
-	-- previously_harvested,
-	first_harvest_year,
 	original_tree_cn,
+	association,
 	statuscd,
 	death_year,
-	association
-FROM filtered_plot_observations fpo
-JOIN prepared_trees pt
+	obs_number,
+	yr AS obs_year,
+	first_harvest_year,
+	original_plot_cn,
+	current_cn AS current_plot_cn
+	-- harvested,
+	-- previously_harvested,
+FROM prepared_trees pt
+JOIN filtered_plot_observations fpo
 ON pt.original_plot_cn = fpo.original_cn
 	AND pt.tree_yr = fpo.yr
 
