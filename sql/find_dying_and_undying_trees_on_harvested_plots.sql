@@ -109,6 +109,9 @@ WITH filtered_plot_observations AS (
 		MIN(yr) OVER (
 			PARTITION BY original_cn
 		) AS first_plot_obs_year,
+		MAX(yr) FILTER(WHERE previously_harvested = 0) OVER (
+			PARTITION BY original_cn
+		) AS last_pre_harvest_year,
 		MIN(yr) FILTER(WHERE previously_harvested = 1) OVER (
 			PARTITION BY original_cn
 		) AS first_harvest_year,
@@ -234,6 +237,7 @@ SELECT
 	obs_number,
 	yr AS current_year,
 	first_plot_obs_year,
+	last_pre_harvest_year,
 	first_harvest_year,
 	last_plot_obs_year,
 	original_plot_cn,
@@ -244,7 +248,6 @@ FROM prepared_trees pt
 JOIN filtered_plot_observations fpo
 ON pt.original_plot_cn = fpo.original_cn
 	AND pt.tree_yr = fpo.yr
-
 
 
 
