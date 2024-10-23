@@ -27,6 +27,22 @@ WITH t1_tree_observations AS (
 t1_plots AS (
 	SELECT 
 		COUNT(original_tree_cn) AS t1_population, 
+		SUM(CASE WHEN association = 'AM' THEN 1 ELSE 0 END) AS t1_am_tree_count,
+		SUM(CASE WHEN association = 'EM' THEN 1 ELSE 0 END) AS t1_em_tree_count,
+		SUM(CASE 
+			WHEN association = 'AM' 
+				AND death_year > first_plot_obs_year 
+				AND death_year < first_harvest_year 
+			THEN 1 
+			ELSE 0 
+		END) AS t1_am_death_count,
+		SUM(CASE 
+			WHEN association = 'EM' 
+				AND death_year > first_plot_obs_year 
+				AND death_year < first_harvest_year 
+			THEN 1 
+			ELSE 0 
+		END) AS t1_em_death_count,
 		first_plot_obs_year,
 		last_pre_harvest_year, 
 		first_harvest_year,
@@ -72,6 +88,20 @@ t2_tree_observations AS (
 t2_plots AS (
 	SELECT 
 		COUNT(original_tree_cn) AS t2_population, 
+		SUM(CASE WHEN association = 'AM' THEN 1 ELSE 0 END) AS t2_am_tree_count,
+		SUM(CASE WHEN association = 'EM' THEN 1 ELSE 0 END) AS t2_em_tree_count,
+		SUM(CASE 
+			WHEN association = 'AM' 
+				AND death_year > first_harvest_year 
+			THEN 1 
+			ELSE 0 
+		END) AS t2_am_death_count,
+		SUM(CASE 
+			WHEN association = 'EM' 
+				AND death_year > first_harvest_year 
+			THEN 1 
+			ELSE 0 
+		END) AS t2_em_death_count,
 		first_plot_obs_year,
 		last_pre_harvest_year, 
 		first_harvest_year,
@@ -88,8 +118,28 @@ t2_plots AS (
 	ORDER BY 
 		original_plot_cn 	
 )
---
-SELECT * 
-FROM t2_plots
+-- 
+SELECT 
+	t1_population,
+	t1_am_tree_count,
+	t1_em_tree_count,
+	t1_am_death_count,
+	t1_em_death_count,
+	t2_population,
+	t2_am_tree_count,
+	t2_em_tree_count,
+	t2_am_death_count,
+	t2_em_death_count,
+	t1.first_plot_obs_year,
+	t1.last_pre_harvest_year,
+	t1.first_harvest_year,
+	t1.last_plot_obs_year,
+	t1.original_plot_cn
+FROM t1_plots t1
+JOIN t2_plots t2							-- note: this join excludes 52 plots that don't have trees in t2
+ON t1.original_plot_cn = t2.original_plot_cn
 
-	
+
+
+
+
