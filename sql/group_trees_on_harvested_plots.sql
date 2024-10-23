@@ -26,7 +26,6 @@ WITH t1_tree_observations AS (
 
 t1_plots AS (
 	SELECT 
-		COUNT(original_tree_cn) AS t1_population, 
 		SUM(CASE WHEN association = 'AM' THEN 1 ELSE 0 END) AS t1_am_tree_count,
 		SUM(CASE WHEN association = 'EM' THEN 1 ELSE 0 END) AS t1_em_tree_count,
 		SUM(CASE 
@@ -87,7 +86,6 @@ t2_tree_observations AS (
 
 t2_plots AS (
 	SELECT 
-		COUNT(original_tree_cn) AS t2_population, 
 		SUM(CASE WHEN association = 'AM' THEN 1 ELSE 0 END) AS t2_am_tree_count,
 		SUM(CASE WHEN association = 'EM' THEN 1 ELSE 0 END) AS t2_em_tree_count,
 		SUM(CASE 
@@ -120,12 +118,12 @@ t2_plots AS (
 )
 -- 
 SELECT 
-	t1_population,
+	t1.last_pre_harvest_year - t1.first_plot_obs_year AS t1_timespan,
 	t1_am_tree_count,
 	t1_em_tree_count,
 	t1_am_death_count,
 	t1_em_death_count,
-	t2_population,
+	t1.last_plot_obs_year - t1.first_harvest_year AS t2_timespan,
 	t2_am_tree_count,
 	t2_em_tree_count,
 	t2_am_death_count,
