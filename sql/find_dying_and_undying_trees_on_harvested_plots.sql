@@ -40,7 +40,7 @@ WITH filtered_plot_observations AS (
 				ON 
 					plot_cte.original_cn = obs_nums.original_cn
 					AND ARRAY_LENGTH(plot_cte.cn_sequence, 1) = obs_nums.num		-- filter out incomplete arrays left over from construction
-				WHERE num > 2		-- the plot needs to have been observed at least three times
+				WHERE num > 3		-- the plot needs to have been observed at least four times
 				ORDER BY num DESC
 			)
 			-- check for harvesting each plot year
@@ -66,14 +66,14 @@ WITH filtered_plot_observations AS (
 				END)) OVER (
 					PARTITION BY original_cn
 					ORDER BY yr
-				)::DECIMAL / 10)::SMALLINT AS previously_harvested   -- retuns 1 for "has been harvested and zero for never harvested"	
+				)::DECIMAL / 10)::SMALLINT AS previously_harvested   -- returns 1 for "has been harvested and zero for never harvested"	
 			FROM plot_observations pobs
 			JOIN east_us_cond euc 		-- check on loss of ~100 rows here (probably some plots don't have any conditions?)
 			ON euc.plt_cn = pobs.current_cn
 			GROUP BY pobs.original_cn, pobs.current_cn, pobs.yr	
 			ORDER BY original_cn DESC, yr
 		)
-		-- add columns indicating whether a plot was harvested on first observation and whether its harvest was before the last observation
+		-- add columns indicating whether a plot was harvested on first two observations and whether its harvest was before the last observation
 		SELECT
 			obs_number,
 			original_cn,
@@ -87,7 +87,10 @@ WITH filtered_plot_observations AS (
 			FIRST_VALUE(previously_harvested) OVER (
 				PARTITION BY original_cn
 				ORDER BY yr
-			) AS first_observation_harvested
+			) AS first_observation_harvested,
+			MAX(harvested) FILTER(WHERE obs_number = 2) OVER (
+				PARTITION BY original_cn
+			) AS second_observation_harvested		
 		FROM harvested_observations hobs
 		ORDER BY 
 			original_cn DESC, 
@@ -109,6 +112,7 @@ WITH filtered_plot_observations AS (
 	FROM unfiltered_observations unfobs
 	WHERE 
 		first_observation_harvested = 0 	-- the plot must be unharvested at the first observation
+		AND second_observation_harvested = 0		-- the plot must be unharvested at the second observation
 		AND num_post_harvest_obs > 1		-- the plot must have at least one additional observation after the first harvest
 	ORDER BY 
 		original_cn DESC, 
