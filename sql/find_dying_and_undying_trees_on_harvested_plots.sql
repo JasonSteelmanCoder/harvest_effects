@@ -106,9 +106,15 @@ WITH filtered_plot_observations AS (
 		yr,
 		harvested,
 		previously_harvested,
+		MIN(yr) OVER (
+			PARTITION BY original_cn
+		) AS first_plot_obs_year,
 		MIN(yr) FILTER(WHERE previously_harvested = 1) OVER (
 			PARTITION BY original_cn
-		) AS first_harvest_year
+		) AS first_harvest_year,
+		MAX(yr) OVER (
+			PARTITION BY original_cn
+		) AS last_plot_obs_year
 	FROM unfiltered_observations unfobs
 	WHERE 
 		first_observation_harvested = 0 	-- the plot must be unharvested at the first observation
@@ -226,8 +232,10 @@ SELECT
 	statuscd,
 	death_year,
 	obs_number,
-	yr AS obs_year,
+	yr AS current_year,
+	first_plot_obs_year,
 	first_harvest_year,
+	last_plot_obs_year,
 	original_plot_cn,
 	current_cn AS current_plot_cn
 	-- harvested,
