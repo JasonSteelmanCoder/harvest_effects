@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import csv
 import numpy as np
 from scipy import stats
+import matplotlib.pyplot as plt
 
 load_dotenv()
 
@@ -129,4 +130,25 @@ cohens_d = mean_am_delta_deaths_before_filtering - mean_em_delta_deaths_before_f
 
 print(f"effect size: {cohens_d}")
 
+
+# plot the distribution of filtered delta deaths
+fig, (ax1, ax2) = plt.subplots(2, 1)
+fig.suptitle("Changes in Mortality Rates After Cutting")
+
+ax1.hist(filtered_delta_am_deaths_list, bins=500, color='orange')
+ax1.set_title("Arbuscular Mycorrhizal")
+ax1.set_xlabel("Δ deaths per tree per year")
+ax1.set_ylabel("frequency")
+ax1.set_xlim(-0.3, 0.2)
+ax1.set_ylim(0, 200)
+
+ax2.hist(filtered_delta_em_deaths_list, bins=500)
+ax2.set_title("Ectomycorrhizal")
+ax2.set_xlabel("Δ deaths per tree per year")
+ax2.set_ylabel("frequency")
+ax2.set_xlim(-0.3, 0.2)
+ax2.set_ylim(0, 200)
+
+plt.tight_layout()
+plt.show()
 
