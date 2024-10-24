@@ -85,10 +85,10 @@ for row in new_reader:
 
     change_in_am_slope = delta_am_per_year_after - delta_am_per_year_before
 
-    print("\n")
-    print(f"delta AM per year before harvesting: {delta_am_per_year_before}")
-    print(f"delta AM per year after harvesting: {delta_am_per_year_after}")
-    print(f"change in AM slope: {change_in_am_slope}")
+    # print("\n")
+    # print(f"delta AM per year before harvesting: {delta_am_per_year_before}")
+    # print(f"delta AM per year after harvesting: {delta_am_per_year_after}")
+    # print(f"change in AM slope: {change_in_am_slope}")
 
     changes_in_am_slope.append(change_in_am_slope)
 
@@ -120,9 +120,9 @@ for row in new_reader:
 
     change_in_em_slope = delta_em_per_year_after - delta_em_per_year_before
 
-    print(f"delta EM per year before harvesting: {delta_em_per_year_before}")
-    print(f"delta EM per year after harvesting: {delta_em_per_year_after}")
-    print(f"change in EM slope: {change_in_em_slope}")
+    # print(f"delta EM per year before harvesting: {delta_em_per_year_before}")
+    # print(f"delta EM per year after harvesting: {delta_em_per_year_after}")
+    # print(f"change in EM slope: {change_in_em_slope}")
 
     changes_in_em_slope.append(change_in_em_slope)
 
@@ -133,3 +133,4 @@ print(f"average change in slope for EM trees: {mean(changes_in_em_slope)}\n")
 
 print(f"t-statistic: {t_statistic}")
 print(f"p-value: {p_value}")
+print()
