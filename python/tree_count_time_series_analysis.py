@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import csv
 from statistics import mean
 from scipy import stats
-import sys
+import matplotlib.pyplot as plt
 
 load_dotenv()
 
@@ -134,3 +134,24 @@ print(f"average change in slope for EM trees: {mean(changes_in_em_slope)}\n")
 print(f"t-statistic: {t_statistic}")
 print(f"p-value: {p_value}")
 print()
+
+# plot the distributions of the two tree associations
+fig, (ax1, ax2) = plt.subplots(2, 1)
+fig.suptitle("Change in Rate of Tree Count Change After Harvesting")
+
+ax1.hist(changes_in_am_slope, bins=250, color="orange")
+ax1.set_xlim(-30, 25)
+ax1.set_ylim(0, 400)
+ax1.set_xlabel("Δ slope of tree count")
+ax1.set_ylabel("frequency")
+ax1.set_title("Arbuscular Mycorrhizal")
+
+ax2.hist(changes_in_em_slope, bins=250)
+ax2.set_xlim(-30, 25)
+ax2.set_ylim(0, 400)
+ax2.set_xlabel("Δ slope of tree count")
+ax2.set_ylabel("frequency")
+ax2.set_title("Ectomycorrhizal")
+
+plt.tight_layout()
+plt.show()
