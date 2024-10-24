@@ -4,6 +4,7 @@ import csv
 from statistics import mean
 from scipy import stats
 import matplotlib.pyplot as plt
+import numpy as np
 
 load_dotenv()
 
@@ -133,6 +134,13 @@ print(f"average change in slope for EM trees: {mean(changes_in_em_slope)}\n")
 
 print(f"t-statistic: {t_statistic}")
 print(f"p-value: {p_value}")
+print()
+
+# calculate effect size
+all_changes_in_slope = changes_in_am_slope + changes_in_em_slope
+pooled_std_dev = np.std(all_changes_in_slope)
+cohens_d = (mean(changes_in_am_slope) - mean(changes_in_em_slope)) / pooled_std_dev
+print(f"effect size: {cohens_d}")
 print()
 
 # plot the distributions of the two tree associations
