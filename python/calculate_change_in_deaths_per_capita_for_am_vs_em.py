@@ -117,7 +117,7 @@ print(f"p-value: {p_value}")
 print()
 
 
-# find effect size
+# calculate effect size
 all_unfiltered_means = []
 for val in delta_am_deaths_list:
     if val is not None:
@@ -129,6 +129,7 @@ pooled_std_dev = np.std(all_unfiltered_means)
 cohens_d = mean_am_delta_deaths_before_filtering - mean_em_delta_deaths_before_filtering / pooled_std_dev
 
 print(f"effect size: {cohens_d}")
+print()
 
 
 # plot the distribution of filtered delta deaths
