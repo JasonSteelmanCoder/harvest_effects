@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import json
 import statistics
 from scipy import stats
+import matplotlib.pyplot as plt
 
 # get the data from a json file
 load_dotenv()
@@ -66,3 +67,24 @@ tstatistic, pvalue = stats.ttest_ind(am_rate_changes, em_rate_changes)
 print(f"t-statistic: {tstatistic}")
 print(f"p-value: {pvalue}")
 print()
+
+# plot the distribution of delta growth for both associations of trees
+fig, (ax1, ax2) = plt.subplots(2, 1)
+fig.suptitle("Changes in Growth Rate After Harvesting")
+
+ax1.hist(am_rate_changes, bins=250, color="orange")
+ax1.set_xlim(-2, 1)
+ax1.set_ylim(0, 2250)
+ax1.set_ylabel("frequency")
+ax1.set_xlabel("Δ growth rate")
+ax1.set_title("Arbuscular Mycorrhizal")
+
+ax2.hist(em_rate_changes, bins=250)
+ax2.set_xlim(-2, 1)
+ax2.set_ylim(0, 2250)
+ax2.set_ylabel("frequency")
+ax2.set_xlabel("Δ growth rate")
+ax2.set_title("Ectomycorrhizal")
+
+plt.tight_layout()
+plt.show()
