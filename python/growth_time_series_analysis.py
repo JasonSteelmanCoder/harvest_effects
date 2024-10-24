@@ -55,11 +55,14 @@ for row in myjson:
         em_rate_changes.append(change_in_rate)
 
 # find the average change in growth rates for AM and EM trees
+print()
 am_mean_change = statistics.mean(am_rate_changes)
 print(f"Mean change in AM growth rates: {am_mean_change}")
 em_mean_change = statistics.mean(em_rate_changes)
 print(f"Mean change in EM growth rates: {em_mean_change}")
+print()
 
 tstatistic, pvalue = stats.ttest_ind(am_rate_changes, em_rate_changes)
 print(f"t-statistic: {tstatistic}")
 print(f"p-value: {pvalue}")
+print()
