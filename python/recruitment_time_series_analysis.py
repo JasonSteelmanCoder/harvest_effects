@@ -18,7 +18,7 @@ other_trees_col = 6
 
 new_reader = []
 
-with open(f"C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/harvest_data/recruitment/interrupted_time_series_data_for_recruitment.csv", "r") as file:
+with open(f"C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/harvest_data/tree_count/interrupted_time_series_data_for_tree_count.csv", "r") as file:
     reader = csv.reader(file)
 
     next(reader)
