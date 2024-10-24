@@ -6,16 +6,19 @@ from scipy import stats
 
 load_dotenv()
 
+# initiate lists to populate later
 t1_am_deaths_per_tree_per_year_list = []
 t1_em_deaths_per_tree_per_year_list = []
 t2_am_deaths_per_tree_per_year_list = []
 t2_em_deaths_per_tree_per_year_list = []
 
+# go through the csv row by row
 with open(f"C:/Users/{os.getenv("MS_USER_NAME")}/desktop/harvest_data/mortality/plots_with_tree_counts_and_death_counts_for_t1_and_t2.csv") as data:
     reader = csv.reader(data)
 
-    next(reader)
+    next(reader)        # skip the header row
 
+    # name each of the columns in the csv for easy reference
     for row in reader:
         t1_timespan = int(row[0])
         t1_am_tree_count = int(row[1])
@@ -56,6 +59,7 @@ with open(f"C:/Users/{os.getenv("MS_USER_NAME")}/desktop/harvest_data/mortality/
         except:
             t2_em_deaths_per_tree_per_year = None
 
+        # add the data from this row to the global lists
         t1_am_deaths_per_tree_per_year_list.append(t1_am_deaths_per_tree_per_year)
         t1_em_deaths_per_tree_per_year_list.append(t1_em_deaths_per_tree_per_year)
         t2_am_deaths_per_tree_per_year_list.append(t2_am_deaths_per_tree_per_year)
