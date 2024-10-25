@@ -1,7 +1,3 @@
-# total plots analyzed for mortality:
-#   4,669 including plots that have None in one of their tree categories
-#   3,886 excluding plots that missing trees from one of the four categories
-
 import os
 from dotenv import load_dotenv
 import csv
@@ -58,11 +54,15 @@ with open(f'C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/harvest_data/mortality/
         t2_death_counts.append(t2_am_death_count + t2_em_death_count)
 
 # print stats
+print()
+print("plots analyzed, including plots that have None in one of their tree categories: 4,669")
+print("plots analyzed, excluding plots that missing trees from one of the four categories: 3,886")
+print()
+
 mean_t1_timespan = np.mean(t1_timespans)
 mean_t2_timespan = np.mean(t2_timespans)
 mean_total_timespan = np.mean(total_timespans)
 
-print()
 print(f"mean t1 timespan: {mean_t1_timespan}")
 print(f"mean t2 timespan: {mean_t2_timespan}")
 print(f"mean total timespan: {mean_total_timespan}")
@@ -71,8 +71,8 @@ print()
 mean_t1_tree_count = np.mean(t1_tree_counts)
 mean_t2_tree_count = np.mean(t2_tree_counts)
 
-print(f"mean number of trees in a plot during t1: {mean_t1_tree_count}")
-print(f"mean number of trees in a plot during t2: {mean_t2_tree_count}")
+print(f"mean number of distinct trees in a plot during t1: {mean_t1_tree_count}")
+print(f"mean number of distinct trees in a plot during t2: {mean_t2_tree_count}")
 print()
 
 mean_t1_death_count = np.mean(t1_death_counts)
