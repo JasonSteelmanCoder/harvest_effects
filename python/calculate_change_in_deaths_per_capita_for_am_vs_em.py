@@ -88,10 +88,10 @@ for i in range(len(t1_am_deaths_per_tree_per_year_list)):
 # before filtering out plots that have None in one of the two associations, average each association
 print()
 mean_am_delta_deaths_before_filtering =  np.nanmean(np.array([x if x is not None else np.nan for x in delta_am_deaths_list]))
-print(f"pre-filtering mean AM delta deaths: {mean_am_delta_deaths_before_filtering}")
+print(f"mean AM delta mortality before filtering: {mean_am_delta_deaths_before_filtering}")
 
 mean_em_delta_deaths_before_filtering =  np.nanmean(np.array([x if x is not None else np.nan for x in delta_em_deaths_list]))
-print(f"pre-filtering mean EM delta deaths: {mean_em_delta_deaths_before_filtering}")
+print(f"mean EM delta mortality before filtering: {mean_em_delta_deaths_before_filtering}")
 
 
 # filter out plots that have None for either delta AM or delta EM
@@ -106,8 +106,8 @@ for item in zip(delta_am_deaths_list, delta_em_deaths_list):
 mean_am_delta_deaths_filtered = np.mean(filtered_delta_am_deaths_list)
 mean_em_delta_deaths_filtered = np.mean(filtered_delta_em_deaths_list)
 print()
-print(f"filtered mean AM delta deaths: {mean_am_delta_deaths_filtered}")
-print(f"filtered mean EM delta deaths: {mean_em_delta_deaths_filtered}")
+print(f"filtered mean AM delta mortality: {mean_am_delta_deaths_filtered}")
+print(f"filtered mean EM delta mortality: {mean_em_delta_deaths_filtered}")
 print()
 
 # perform a paired t-test for the filtered means
@@ -141,15 +141,14 @@ ax1.set_title("Arbuscular Mycorrhizal")
 ax1.set_xlabel("Δ deaths per tree per year")
 ax1.set_ylabel("frequency")
 ax1.set_xlim(-0.3, 0.2)
-ax1.set_ylim(0, 200)
+ax1.set_ylim(0, 1000)
 
 ax2.hist(filtered_delta_em_deaths_list, bins=500)
 ax2.set_title("Ectomycorrhizal")
 ax2.set_xlabel("Δ deaths per tree per year")
 ax2.set_ylabel("frequency")
 ax2.set_xlim(-0.3, 0.2)
-ax2.set_ylim(0, 200)
+ax2.set_ylim(0, 1000)
 
 plt.tight_layout()
 plt.show()
-
