@@ -10,7 +10,7 @@ WITH individual_trees_with_spcd AS (
 								SELECT 
 									eumot.original_cn,
 									UNNEST(eumot.cn_sequence) AS current_cn
-								FROM east_us_multi_observed_trees eumot
+								FROM east_us_multi_observed_trees_from_tree_table eumot			-- earlier versions used multi observed trees from the grm table
 								WHERE ARRAY_LENGTH(eumot.cn_sequence, 1) > 2		-- accept only trees that were observed at least 3x
 							)
 							-- add diameter, year, and plot from the tree table
