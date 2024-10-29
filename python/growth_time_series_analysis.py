@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 # get the data from a json file
 load_dotenv()
-input_file = f"C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/harvest_data/growth/growth_itsa_data.json"
+input_file = f"C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/harvest_data/growth/including_timberland/growth_itsa_data.json"
 with open(input_file, "r") as file:
     myjson = json.load(file)
 
@@ -75,6 +75,7 @@ print()
 # plot the distribution of delta growth for both associations of trees
 fig, (ax1, ax2) = plt.subplots(2, 1)
 fig.suptitle("Changes in Growth Rate After Harvesting")
+
 bin_width = 0.01
 num_am_bins = int((max(am_rate_changes) - min(am_rate_changes)) // bin_width)
 num_em_bins = int((max(em_rate_changes) - min(em_rate_changes)) // bin_width)
