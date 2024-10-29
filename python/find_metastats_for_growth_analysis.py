@@ -6,7 +6,7 @@ import numpy as np
 
 # get the data from a json file
 load_dotenv()
-input_file = f"C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/harvest_data/growth/growth_itsa_data.json"
+input_file = f"C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/harvest_data/growth/including_timberland/growth_itsa_data.json"
 with open(input_file, "r") as file:
     myjson = json.load(file)
 
