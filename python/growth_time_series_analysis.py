@@ -41,6 +41,10 @@ for row in myjson:
     growth_until_harvest = round(harvest_dia - starting_dia, 2)
     growth_after_harvest = round(final_dia - harvest_dia, 2)
 
+    # guard against divide-by-zero errors
+    if years_until_harvest == 0 or years_after_harvest == 0:
+        continue
+
     # calculate growth per year before and after harvesting
     growth_rate_before = growth_until_harvest / years_until_harvest
     growth_rate_after = growth_after_harvest / years_after_harvest
