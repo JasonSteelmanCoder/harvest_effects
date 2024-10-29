@@ -136,14 +136,18 @@ print()
 fig, (ax1, ax2) = plt.subplots(2, 1)
 fig.suptitle("Changes in Mortality Rates After Cutting")
 
-ax1.hist(filtered_delta_am_deaths_list, bins=500, color='orange')
+bin_width = 0.001
+am_bins = int((max(filtered_delta_am_deaths_list) - min(filtered_delta_am_deaths_list)) / bin_width)
+em_bins = int((max(filtered_delta_em_deaths_list) - min(filtered_delta_em_deaths_list)) / bin_width)
+
+ax1.hist(filtered_delta_am_deaths_list, bins=am_bins, color='orange')
 ax1.set_title("Arbuscular Mycorrhizal")
 ax1.set_xlabel("Δ deaths per tree per year")
 ax1.set_ylabel("frequency")
 ax1.set_xlim(-0.3, 0.2)
 ax1.set_ylim(0, 200)
 
-ax2.hist(filtered_delta_em_deaths_list, bins=500)
+ax2.hist(filtered_delta_em_deaths_list, bins=em_bins)
 ax2.set_title("Ectomycorrhizal")
 ax2.set_xlabel("Δ deaths per tree per year")
 ax2.set_ylabel("frequency")
