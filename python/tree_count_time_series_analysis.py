@@ -147,14 +147,18 @@ print()
 fig, (ax1, ax2) = plt.subplots(2, 1)
 fig.suptitle("Change in Rate of Tree Count Change After Harvesting")
 
-ax1.hist(changes_in_am_slope, bins=250, color="orange")
+bin_width = 0.1
+am_bin_width = int((max(changes_in_am_slope) - min(changes_in_am_slope)) / bin_width)
+em_bin_width = int((max(changes_in_em_slope) - min(changes_in_em_slope)) / bin_width)
+
+ax1.hist(changes_in_am_slope, bins=am_bin_width, color="orange")
 ax1.set_xlim(-30, 25)
 ax1.set_ylim(0, 400)
 ax1.set_xlabel("Δ slope of tree count")
 ax1.set_ylabel("frequency")
 ax1.set_title("Arbuscular Mycorrhizal")
 
-ax2.hist(changes_in_em_slope, bins=250)
+ax2.hist(changes_in_em_slope, bins=em_bin_width)
 ax2.set_xlim(-30, 25)
 ax2.set_ylim(0, 400)
 ax2.set_xlabel("Δ slope of tree count")
