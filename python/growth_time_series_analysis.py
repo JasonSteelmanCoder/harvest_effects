@@ -75,8 +75,7 @@ print(f"p-value: {pvalue}")
 print()
 
 # find the effect size
-all_rate_changes = am_rate_changes + em_rate_changes
-pooled_std = np.std(all_rate_changes)
+pooled_std = np.sqrt((np.std(am_rate_changes) ** 2 + np.std(em_rate_changes) ** 2) / 2)
 cohens_d = (am_mean_change - em_mean_change) / pooled_std
 print(f"effect size: {cohens_d}")
 print()

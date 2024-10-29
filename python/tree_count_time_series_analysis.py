@@ -137,8 +137,7 @@ print(f"p-value: {p_value}")
 print()
 
 # calculate effect size
-all_changes_in_slope = changes_in_am_slope + changes_in_em_slope
-pooled_std_dev = np.std(all_changes_in_slope)
+pooled_std_dev = np.sqrt((np.std(changes_in_am_slope) ** 2 + np.std(changes_in_em_slope) ** 2) / 2)
 cohens_d = (mean(changes_in_am_slope) - mean(changes_in_em_slope)) / pooled_std_dev
 print(f"effect size: {cohens_d}")
 print()
