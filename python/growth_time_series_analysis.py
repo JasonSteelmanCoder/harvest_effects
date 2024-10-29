@@ -4,6 +4,7 @@ import json
 import statistics
 from scipy import stats
 import matplotlib.pyplot as plt
+import numpy as np
 
 # get the data from a json file
 load_dotenv()
@@ -71,6 +72,13 @@ print()
 tstatistic, pvalue = stats.ttest_ind(am_rate_changes, em_rate_changes)
 print(f"t-statistic: {tstatistic}")
 print(f"p-value: {pvalue}")
+print()
+
+# find the effect size
+all_rate_changes = am_rate_changes + em_rate_changes
+pooled_std = np.std(all_rate_changes)
+cohens_d = (am_mean_change - em_mean_change) / pooled_std
+print(f"effect size: {cohens_d}")
 print()
 
 # plot the distribution of delta growth for both associations of trees
