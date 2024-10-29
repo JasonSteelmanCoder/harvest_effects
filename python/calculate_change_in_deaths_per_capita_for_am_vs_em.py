@@ -118,14 +118,7 @@ print()
 
 
 # calculate effect size
-all_unfiltered_means = []
-for val in delta_am_deaths_list:
-    if val is not None:
-        all_unfiltered_means.append(val)
-for val in delta_em_deaths_list:
-    if val is not None:
-        all_unfiltered_means.append(val)
-pooled_std_dev = np.std(all_unfiltered_means)
+pooled_std_dev = np.sqrt((np.std(filtered_delta_am_deaths_list) ** 2 + np.std(filtered_delta_em_deaths_list) ** 2) / 2)
 cohens_d = (mean_am_delta_deaths_before_filtering - mean_em_delta_deaths_before_filtering) / pooled_std_dev
 
 print(f"effect size: {cohens_d}")
