@@ -26,7 +26,7 @@ WITH individual_trees_with_spcd AS (
 							WHERE eut.dia IS NOT NULL		-- tree must have a valid diameter
 								AND eut.statuscd = 1		-- tree must be alive
 						)
-						-- add measurement year from the cond table
+						-- add measurement year from the plot table
 						SELECT 
 							mt.*,
 							eup.measyear
@@ -38,7 +38,8 @@ WITH individual_trees_with_spcd AS (
 					-- REMEMBER: one plot can have more than one condition! Each row in this cte is a *condition* on the plot where the tree is.
 					SELECT
 						dt.*,
-						CASE WHEN trtcd1 IS NULL THEN NULL WHEN (trtcd1 = 10 OR trtcd2 = 10 OR trtcd3 = 10) THEN 10 ELSE 0 END AS harvested
+						CASE WHEN trtcd1 IS NULL THEN NULL WHEN (trtcd1 = 10 OR trtcd2 = 10 OR trtcd3 = 10) THEN 10 ELSE 0 END AS harvested,
+						stdorgcd			-- indicates whether the condition is artificially regenerated
 					FROM dated_trees dt
 					JOIN east_us_cond euc
 					ON euc.plt_cn = dt.plt_cn
@@ -51,12 +52,15 @@ WITH individual_trees_with_spcd AS (
 					cnd.measyear, 
 					cnd.plt_cn,
 					cnd.spcd,
-					ARRAY_AGG(harvested ORDER BY harvested) AS harvest_conditions
+					ARRAY_AGG(harvested ORDER BY measyear) AS harvest_conditions,
+					ARRAY_AGG(stdorgcd ORDER BY measyear) AS stdorgcd_conditions
 				FROM conditions cnd
 				GROUP BY original_cn, current_cn, dia, measyear, plt_cn, spcd
+				ORDER BY original_cn, measyear, plt_cn
 			)
 			-- consolidate harvest conditions into one indicator per tree observation
 			-- if harvest conditions has a 10, keep a 10 (we know there's harvesting there). if it doesn't have a 10, but does have a null, keep null (there could be harvesting that we don't know about). if it's all zeros, keep 0.
+			-- note that each row in this cte is still an *observation* of a tree
 			SELECT 
 				original_cn, 
 				current_cn,
@@ -65,7 +69,9 @@ WITH individual_trees_with_spcd AS (
 				plt_cn,
 				spcd,
 				harvest_conditions,
-				CASE WHEN 10 = ANY(harvest_conditions) THEN 10 WHEN ARRAY_POSITION(harvest_conditions, NULL) IS NOT NULL THEN NULL ELSE 0 END AS harvested
+				CASE WHEN 10 = ANY(harvest_conditions) THEN 10 WHEN ARRAY_POSITION(harvest_conditions, NULL) IS NOT NULL THEN NULL ELSE 0 END AS harvested,
+				stdorgcd_conditions,
+				CASE WHEN 1 = ANY(stdorgcd_conditions) THEN 1 WHEN array_remove(stdorgcd_conditions, NULL) IS NULL THEN 2 ELSE 0 END AS remove_as_timberland
 			FROM conditioned_trees ct
 		)
 		-- group all observations back into individual trees
@@ -76,15 +82,20 @@ WITH individual_trees_with_spcd AS (
 			spcd,
 			ARRAY_AGG(po.dia ORDER BY measyear) AS dia,
 			ARRAY_AGG(po.measyear ORDER BY measyear) AS measyear,
-			ARRAY_AGG(po.harvested ORDER BY measyear) AS harvested
+			ARRAY_AGG(po.harvested ORDER BY measyear) AS harvested,
+			ARRAY_AGG(po.remove_as_timberland ORDER BY measyear) AS remove_as_timberland
 		FROM prepped_observations po
 		GROUP BY original_cn, spcd
 	)
 	-- only keep trees that were unharvested on their first observation and harvested before the final observation
+	-- only keep trees that are on plots that never showed signs of artificial regeneration
 	SELECT 
 		it.*
 	FROM individual_trees it
-	WHERE ARRAY_TO_STRING(it.harvested, ',', 'null') ~ '^(0,)+10(\S)+$'	-- the harvest sequence has any number of zeros, followed by a ten, then other values. In other words, it's not harvested in the first observation (or the first few), but it's harvested before the last observation.
+	WHERE 
+		ARRAY_TO_STRING(it.harvested, ',', 'null') ~ '^(0,)+10(\S)+$'		-- the harvest sequence has any number of zeros, followed by a ten, then other values. In other words, it's not harvested in the first observation (or the first few), but it's harvested before the last observation.
+		AND 1 != ALL(it.remove_as_timberland) 							-- exclude trees on plots that are artificially regenerated
+		AND 2 != ALL(it.remove_as_timberland)							-- exclued trees on plots where stdorgcd is always null
 	ORDER BY ARRAY_LENGTH(cn_sequence, 1) DESC
 )
 -- convert spcd to association
