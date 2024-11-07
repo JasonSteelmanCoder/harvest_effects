@@ -8,7 +8,7 @@ import numpy as np
 
 # get the data from a json file
 load_dotenv()
-input_file = f"C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/harvest_data/growth/including_timberland/growth_itsa_data.json"
+input_file = f"C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/harvest_data/growth/growth_itsa_data.json"
 with open(input_file, "r") as file:
     myjson = json.load(file)
 
@@ -90,14 +90,14 @@ num_em_bins = int((max(em_rate_changes) - min(em_rate_changes)) // bin_width)
 
 ax1.hist(am_rate_changes, bins=num_am_bins, color="orange")
 ax1.set_xlim(-0.6, 0.6)
-ax1.set_ylim(0, 6000)
+ax1.set_ylim(0, 4000)
 ax1.set_ylabel("frequency")
 ax1.set_xlabel("Δ growth rate")
 ax1.set_title("Arbuscular Mycorrhizal")
 
 ax2.hist(em_rate_changes, bins=num_em_bins)
 ax2.set_xlim(-0.6, 0.6)
-ax2.set_ylim(0, 6000)
+ax2.set_ylim(0, 4000)
 ax2.set_ylabel("frequency")
 ax2.set_xlabel("Δ growth rate")
 ax2.set_title("Ectomycorrhizal")
