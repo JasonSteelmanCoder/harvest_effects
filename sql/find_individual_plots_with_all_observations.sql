@@ -27,7 +27,7 @@ WITH RECURSIVE plot_cte AS (
 SELECT 
 	plot_cte.original_cn, 
 	plot_cte.cn_sequence,
-	plot_cte.year_sequence,
+	plot_cte.year_sequence
 FROM plot_cte
 JOIN obs_nums
 ON 
