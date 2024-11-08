@@ -112,4 +112,11 @@ JOIN ref_species rs
 ON rs.spcd = itws.spcd
 
 
-
+-- output:
+-- original_cn
+-- cn_sequence (list)
+-- plt_cn (list)
+-- association
+-- dia
+-- measyear (list)
+-- harvested (list)
