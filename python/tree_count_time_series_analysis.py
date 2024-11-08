@@ -19,7 +19,7 @@ other_trees_col = 6
 
 new_reader = []
 
-with open(f"C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/harvest_data/tree_count/including_timberland/interrupted_time_series_data_for_tree_count.csv", "r") as file:
+with open(f"C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/harvest_data/tree_count/interrupted_time_series_data_for_tree_count.csv", "r") as file:
     reader = csv.reader(file)
 
     next(reader)
@@ -151,15 +151,15 @@ am_bin_width = int((max(changes_in_am_slope) - min(changes_in_am_slope)) / bin_w
 em_bin_width = int((max(changes_in_em_slope) - min(changes_in_em_slope)) / bin_width)
 
 ax1.hist(changes_in_am_slope, bins=am_bin_width, color="orange")
-ax1.set_xlim(-30, 25)
-ax1.set_ylim(0, 400)
+ax1.set_xlim(-20, 20)
+ax1.set_ylim(0, 130)
 ax1.set_xlabel("Δ slope of tree count")
 ax1.set_ylabel("frequency")
 ax1.set_title("Arbuscular Mycorrhizal")
 
 ax2.hist(changes_in_em_slope, bins=em_bin_width)
-ax2.set_xlim(-30, 25)
-ax2.set_ylim(0, 400)
+ax2.set_xlim(-20, 20)
+ax2.set_ylim(0, 130)
 ax2.set_xlabel("Δ slope of tree count")
 ax2.set_ylabel("frequency")
 ax2.set_title("Ectomycorrhizal")
