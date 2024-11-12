@@ -249,7 +249,6 @@ WITH filtered_plot_observations AS (
 			GROUP BY original_cn
 		)
 		-- filter out plots that are flagged
-		-- and plots that don't have a proper sequence of harvest codes (we want plots that were not harvested at first, but then were harvested before the last observation.)
 		SELECT
 			original_cn,
 			cn_sequence,
@@ -260,7 +259,6 @@ WITH filtered_plot_observations AS (
 		FROM flagged_plots
 		WHERE 
 			reject_this_plot = 0
-			AND ARRAY_TO_STRING(harvested_sequence, ',', 'null') ~ '^(0,)+10(\S)+$'		-- the harvest sequence has any number of zeros, followed by a ten, then other values. In other words, it's not harvested in the first observation (or the first few), but it's harvested before the last observation.
 	)
 	-- unnest again to get plot observations (this time only from filtered plots)
 	SELECT 
@@ -297,7 +295,7 @@ WITH filtered_plot_observations AS (
 
 ), tree_observations AS (
 
-	-- join plot observations with the trees that were observed there
+	-- join plot observations with the tree observations that happened there
 	-- this filters out trees that are on rejected plots
 	-- each row in this cte is a *tree observation* with original_plot_cn referring to the first time that that plot was observed
 	SELECT 
@@ -313,24 +311,31 @@ WITH filtered_plot_observations AS (
 	JOIN multi_obs_trees mot
 	ON fpo.current_plot_cn = mot.plt_cn
 
+), unique_trees AS (
+
+	-- group the tree observations back into unique trees
+	SELECT 
+		tobs.original_tree_cn AS original_cn,
+		ARRAY_AGG(tobs.current_tree_cn ORDER BY measyear) AS cn_sequence,
+		ARRAY_AGG(tobs.current_plot_cn ORDER BY measyear) AS plt_cn,
+		tobs.association,
+		ARRAY_AGG(tobs.dia ORDER BY measyear) AS dia,
+		ARRAY_AGG(tobs.measyear ORDER BY measyear) AS measyear,
+		ARRAY_AGG(tobs.harvested ORDER BY measyear) AS harvested
+	FROM tree_observations tobs
+	GROUP BY
+		tobs.original_tree_cn,
+		tobs.association
+
 )
--- group the observations back into unique trees
+-- filter the unique trees for their harvest sequence
 SELECT 
-	tobs.original_tree_cn AS original_cn,
-	ARRAY_AGG(tobs.current_tree_cn ORDER BY measyear) AS cn_sequence,
-	ARRAY_AGG(tobs.current_plot_cn ORDER BY measyear) AS plt_cn,
-	tobs.association,
-	ARRAY_AGG(tobs.dia ORDER BY measyear) AS dia,
-	ARRAY_AGG(tobs.measyear ORDER BY measyear) AS measyear,
-	ARRAY_AGG(tobs.harvested ORDER BY measyear) AS harvested
-FROM tree_observations tobs
-GROUP BY
-	tobs.original_tree_cn,
-	tobs.association
+	*
+FROM unique_trees
+WHERE 
+	ARRAY_TO_STRING(harvested, ',', 'null') ~ '^(0,)+10(\S)+$'		-- the harvest sequence has any number of zeros, followed by a ten, then other values. In other words, it's not harvested in the first observation (or the first few), but it's harvested before the last observation.
 
 
--- TO DO: 
--- figure out why some trees have less than three observations
 
 
 
