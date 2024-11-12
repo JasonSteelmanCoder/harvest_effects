@@ -44,6 +44,7 @@ WITH filtered_plot_observations AS (
 				ORDER BY num DESC
 			)
 			-- check for harvesting each plot year
+			-- Note: this cte both joins AND groups by. Thus, each row in the cte is still a *plot year*.
 			SELECT 
 				ROW_NUMBER() OVER (
 					PARTITION BY original_cn
@@ -66,19 +67,31 @@ WITH filtered_plot_observations AS (
 				END)) OVER (
 					PARTITION BY original_cn
 					ORDER BY yr
-				)::DECIMAL / 10)::SMALLINT AS previously_harvested   -- returns 1 for "has been harvested and zero for never harvested"	
+				)::DECIMAL / 10)::SMALLINT AS previously_harvested,   -- returns 1 for "has been harvested and zero for never harvested"	
+				MAX(CASE
+					WHEN euc.stdorgcd = 1
+					THEN 1
+					WHEN 
+						euc.stdorgcd IS NULL 
+						AND euc.cond_status_cd = 1 
+						AND euc.presnfcd NOT IN (40, 41, 42, 43, 45)
+					THEN 1
+					ELSE 0
+				END) AS exclude_this_plot
 			FROM plot_observations pobs
 			JOIN east_us_cond euc 		-- check on loss of ~100 rows here (probably some plots don't have any conditions?)
 			ON euc.plt_cn = pobs.current_cn
-			GROUP BY pobs.original_cn, pobs.current_cn, pobs.yr	
+			GROUP BY pobs.original_cn, pobs.current_cn, pobs.yr
 			ORDER BY original_cn DESC, yr
 		)
 		-- add columns indicating whether a plot was harvested on first two observations and whether its harvest was before the last observation
+		-- rows in this cte are still *plot observations*
 		SELECT
 			obs_number,
 			original_cn,
 			current_cn,
 			yr,
+			exclude_this_plot,
 			harvested,
 			previously_harvested,
 			SUM(previously_harvested) FILTER (WHERE previously_harvested IS NOT NULL) OVER (
@@ -96,14 +109,17 @@ WITH filtered_plot_observations AS (
 			original_cn DESC, 
 			obs_number
 	)
+	-- filter out plots that have timberland flags
 	-- only keep observations for plots that are unharvested on their first observation
 	-- and have at least one additional observation after their first harvest
 	-- add a column for first harvest year
+	-- rows in this cte are still *plot observations*
 	SELECT 
 		obs_number,
 		original_cn,
 		current_cn,
 		yr,
+		exclude_this_plot,
 		harvested,
 		previously_harvested,
 		MIN(yr) OVER (
@@ -120,7 +136,8 @@ WITH filtered_plot_observations AS (
 		) AS last_plot_obs_year
 	FROM unfiltered_observations unfobs
 	WHERE 
-		first_observation_harvested = 0 	-- the plot must be unharvested at the first observation
+		exclude_this_plot = 0				-- the plot must not be flagged as potential timberland
+		AND first_observation_harvested = 0 	-- the plot must be unharvested at the first observation
 		AND second_observation_harvested = 0		-- the plot must be unharvested at the second observation
 		AND num_post_harvest_obs > 1		-- the plot must have at least one additional observation after the first harvest
 	ORDER BY 
