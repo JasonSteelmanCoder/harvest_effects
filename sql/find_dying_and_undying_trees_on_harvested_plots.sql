@@ -69,12 +69,11 @@ WITH filtered_plot_observations AS (
 					ORDER BY yr
 				)::DECIMAL / 10)::SMALLINT AS previously_harvested,   -- returns 1 for "has been harvested and zero for never harvested"	
 				MAX(CASE
-					WHEN euc.stdorgcd = 1
+					WHEN euc.stdorgcd = 1       -- reject plots that have conditions with artificial regeneration
 					THEN 1
 					WHEN 
 						euc.stdorgcd IS NULL 
-						AND euc.cond_status_cd = 1 
-						AND euc.presnfcd NOT IN (40, 41, 42, 43, 45)
+						AND euc.cond_status_cd != 1         -- reject plots that have conditions with null stdorgcd and non-forest cond_status_cd
 					THEN 1
 					ELSE 0
 				END) AS exclude_this_plot

@@ -73,12 +73,11 @@ WITH filtered_plot_observations AS (
 							ELSE 0 
 						END AS harvested,
 						CASE 
-							WHEN stdorgcd = 1			-- reject plots with artificial regeneration
+							WHEN stdorgcd = 1			-- reject plots that have conditions with artificial regeneration
 							THEN 1
 							WHEN 
 								stdorgcd IS NULL 
-								AND cond_status_cd = 2 
-								AND presnfcd NOT IN (40, 41, 42, 43, 45)		-- reject plots with certain conditions
+								AND cond_status_cd != 1 		-- reject plots that have conditions with null stdorgcd and non-forest cond_status_cd
 							THEN 1
 							ELSE 0
 						END AS reject_this_plot		-- 1 means this plot should be excluded

@@ -59,12 +59,11 @@ WITH plot_observation_associations AS (
 							END) AS harvested,
 							ARRAY_AGG(euc.stdorgcd) AS stdorgcd_for_each_cond,
 							ARRAY_AGG(CASE 
-								WHEN euc.stdorgcd = 1		-- reject conditions with artificial regeneration
+								WHEN euc.stdorgcd = 1		-- reject plots that have conditions with artificial regeneration
 								THEN 1
 								WHEN 
-									euc.stdorgcd IS NULL 				-- reject non-forest conditions caused by humans
-									AND euc.cond_status_cd = 2
-									AND euc.presnfcd NOT IN (40, 41, 42, 43, 45)		
+									euc.stdorgcd IS NULL 
+									AND euc.cond_status_cd != 1			-- reject plots that have conditions with null stdorgcd and non-forest cond_status_cd
 								THEN 1
 								ELSE 0
 							END) AS condition_should_exclude_this_plot		-- 1 means that this condition should cause us to reject the plot it's on
