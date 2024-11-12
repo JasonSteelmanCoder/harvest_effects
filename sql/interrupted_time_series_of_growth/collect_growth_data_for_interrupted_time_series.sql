@@ -160,6 +160,9 @@ WITH filtered_plot_observations AS (
 	ON moto.current_cn = eut.cn
 	JOIN ref_species rs
 	ON rs.spcd = eut.spcd
+	WHERE 
+		eut.dia IS NOT NULL		-- tree observations must have a valid diameter
+		AND eut.statuscd = 1		-- trees must be alive at the time of their observations
 
 ), tree_observations AS (
 
