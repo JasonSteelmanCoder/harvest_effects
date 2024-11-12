@@ -295,27 +295,42 @@ WITH filtered_plot_observations AS (
 	JOIN ref_species rs
 	ON rs.spcd = eut.spcd
 
-)
+), tree_observations AS (
 
--- join plot observations with the trees that were observed there
--- this filters out trees that are on rejected plots
--- each row in this cte is a *tree observation* with original_plot_cn referring to the first time that that plot was observed
+	-- join plot observations with the trees that were observed there
+	-- this filters out trees that are on rejected plots
+	-- each row in this cte is a *tree observation* with original_plot_cn referring to the first time that that plot was observed
+	SELECT 
+		fpo.measyear,
+		fpo.harvested,
+		mot.original_tree_cn,
+		mot.current_tree_cn,
+		mot.dia,
+		mot.association,
+		fpo.original_plot_cn,
+		fpo.current_plot_cn
+	FROM filtered_plot_observations fpo
+	JOIN multi_obs_trees mot
+	ON fpo.current_plot_cn = mot.plt_cn
+
+)
+-- group the observations back into unique trees
 SELECT 
-	fpo.invyr,
-	fpo.measyear,
-	fpo.harvested,
-	mot.original_tree_cn,
-	mot.current_tree_cn,
-	mot.dia,
-	mot.association,
-	fpo.original_plot_cn,
-	fpo.current_plot_cn
-FROM filtered_plot_observations fpo
-JOIN multi_obs_trees mot
-ON fpo.current_plot_cn = mot.plt_cn
+	tobs.original_tree_cn AS original_cn,
+	ARRAY_AGG(tobs.current_tree_cn ORDER BY measyear) AS cn_sequence,
+	ARRAY_AGG(tobs.current_plot_cn ORDER BY measyear) AS plt_cn,
+	tobs.association,
+	ARRAY_AGG(tobs.dia ORDER BY measyear) AS dia,
+	ARRAY_AGG(tobs.measyear ORDER BY measyear) AS measyear,
+	ARRAY_AGG(tobs.harvested ORDER BY measyear) AS harvested
+FROM tree_observations tobs
+GROUP BY
+	tobs.original_tree_cn,
+	tobs.association
+
 
 -- TO DO: 
--- rename output to match original
+-- figure out why some trees have less than three observations
 
 
 
