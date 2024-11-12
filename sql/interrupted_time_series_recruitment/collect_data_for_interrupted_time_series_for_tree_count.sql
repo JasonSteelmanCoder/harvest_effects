@@ -67,7 +67,7 @@ WITH plot_observation_associations AS (
 									AND euc.presnfcd NOT IN (40, 41, 42, 43, 45)		
 								THEN 1
 								ELSE 0
-							END) AS condition_should_exclude_this_plot		-- 1 means that this condition should exclude the plot it's on
+							END) AS condition_should_exclude_this_plot		-- 1 means that this condition should cause us to reject the plot it's on
 						FROM multi_obs_plot_years mopy
 						JOIN east_us_cond euc 		-- check on loss of ~100 rows here (probably some plots don't have any conditions?)
 						ON euc.plt_cn = mopy.cn
