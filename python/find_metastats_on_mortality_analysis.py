@@ -55,8 +55,8 @@ with open(f'C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/harvest_data/mortality/
 
 # print stats
 print()
-print("plots analyzed, including plots that have None in one of their tree categories: 4,669")
-print("plots analyzed, excluding plots that missing trees from one of the four categories: 3,886")
+print("plots analyzed, including plots that have None in one of their tree categories: 1891")
+print("plots analyzed, excluding plots that missing trees from one of the four categories: 1891")
 print()
 
 mean_t1_timespan = np.mean(t1_timespans)
